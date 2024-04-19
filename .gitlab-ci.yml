@@ -5,7 +5,11 @@ stages:
 variables:
   DOCKER_IMAGE_NAME: raplis/rust_ml_service  
   DOCKER_IMAGE_TAG: latest
-  DOCKER_HOST: tcp://docker:2375/  # 注意修改端口号为 2375，TLS 禁用时默认端口
+  DOCKER_HOST: "tcp://docker:2375/"
+
+services:
+  - name: docker:dind
+    alias: docker
 
 before_script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -13,8 +17,6 @@ before_script:
 build:
   image: docker:19.03
   stage: build
-  services:
-    - docker:dind
   script:
     - docker build -t $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .
     - docker push $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
