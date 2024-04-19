@@ -16,6 +16,7 @@ services:
 
 
 before_script:
+  - unset DOCKER_HOST
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 build:
