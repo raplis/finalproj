@@ -3,27 +3,37 @@ stages:
   - deploy
 
 variables:
-  DOCKER_IMAGE_NAME: raplis/rust_ml_service  
+  DOCKER_IMAGE_NAME: raplis/rust_ml_service
   DOCKER_IMAGE_TAG: latest
+  DOCKER_HOST: "tcp://docker:2376"
+  DOCKER_TLS_VERIFY: "1"
+  DOCKER_CERT_PATH: "/certs/client"
 
 before_script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 build:
-  image: docker:latest
+  image: docker:19.03
   stage: build
   services:
-  - name: docker:dind
+    - name: docker:dind
+      alias: docker
+      command: ["--tls=true", "--tlscacert=/certs/ca.pem", "--tlscert=/certs/server-cert.pem", "--tlskey=/certs/server-key.pem"]
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   script:
     - docker build -t $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .
     - docker push $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
 
-
 deploy:
-  image: docker:latest
+  image: docker:19.03
   stage: deploy
+  services:
+    - name: docker:dind
+      alias: docker
+      command: ["--tls=true", "--tlscacert=/certs/ca.pem", "--tlscert=/certs/server-cert.pem", "--tlskey=/certs/server-key.pem"]
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - echo "Deploying the application..."
     - docker pull $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
