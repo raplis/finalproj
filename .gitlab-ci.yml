@@ -3,7 +3,7 @@ stages:
   - deploy
 
 variables:
-  DOCKER_IMAGE_NAME: raplis/rust_ml_service
+  DOCKER_IMAGE_NAME: raplis/rust_ml_service  
   DOCKER_IMAGE_TAG: latest
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_TLS_CERTDIR: ""
@@ -12,7 +12,7 @@ services:
   - docker:dind
 
 before_script:
-  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 build:
   image: docker:latest
