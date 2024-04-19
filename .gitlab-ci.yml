@@ -16,10 +16,10 @@ before_script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 build:
-  image: docker:20.01.16
+  image: docker:latest
   stage: build
   services:
-  - name: docker:20.01.16-dind
+  - name: docker:dind
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   script:
