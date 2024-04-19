@@ -35,7 +35,7 @@ jobs:
     - name: Deploy to EC2
       env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        HOST: {{secrets.EC2_PUBLIC_IP}}
+        HOST: ${{secrets.EC2_PUBLIC_IP}}
         USER: ubuntu
       run: |
         # Install SSH client
