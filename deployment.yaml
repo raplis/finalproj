@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rust-ml-service-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rust-ml-service
+  template:
+    metadata:
+      labels:
+        app: rust-ml-service
+    spec:
+      containers:
+      - name: rust-ml-service
+        image: raplis/rust_ml_service:latest
+        ports:
+        - containerPort: 8080
