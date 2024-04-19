@@ -4,8 +4,13 @@ stages:
 
 variables:
   DOCKER_IMAGE_NAME: raplis/rust_ml_service  
-  DOCKER_IMAGE_TAG: latest
-  DOCKER_HOST: "tcp://docker:2375"
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+services:
+  - name: docker:dind
+    entrypoint: ["env", "-u", "DOCKER_HOST"]
+    command: ["dockerd-entrypoint.sh"]
 
 before_script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -13,9 +18,6 @@ before_script:
 build:
   image: docker:19.03
   stage: build
-  services:
-    - name: docker:dind
-      alias: docker
   script:
     - docker build -t $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .
     - docker push $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
@@ -23,9 +25,6 @@ build:
 deploy:
   image: docker:19.03
   stage: deploy
-  services:
-    - name: docker:dind
-      alias: docker
   script:
     - echo "Deploying the application..."
     - docker pull $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
