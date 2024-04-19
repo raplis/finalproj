@@ -14,7 +14,7 @@ services:
 before_script:
   - echo "$DOCKER_PASSWORD"
   - echo "$DOCKER_USERNAME"
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  # - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 build:
   image: docker:latest
