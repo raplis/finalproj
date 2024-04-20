@@ -27,7 +27,7 @@ jobs:
     - name: Set up Kubeconfig
       uses: azure/setup-kubectl@v1
       with:
-        version: '1.21.0'
+        version: 'v1.21.0'
 
     - name: Deploy to Kubernetes
       run: |
