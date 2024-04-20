@@ -39,6 +39,8 @@ jobs:
         KUBE_CLIENT_CERT: ${{ secrets.KUBE_CLIENT_CERT }}
         KUBE_CLIENT_KEY: ${{ secrets.KUBE_CLIENT_KEY }}
       run: |
+        # Create the .kube directory
+        mkdir -p $HOME/.kube
         # Create the kubeconfig file
         echo "apiVersion: v1
         kind: Config
