@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::process::Command;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct InputData {
     text: String,
     max_length: Option<u32>,
@@ -45,4 +45,22 @@ async fn main() -> std::io::Result<()> {
     .bind("0.0.0.0:8080")?
     .run()
     .await
+}
+
+#[cfg(test)]
+mod integration_tests {
+    use super::*;
+    use actix_web::{test, web, App};
+
+    #[actix_web::test]
+    async fn test_predict_endpoint() {
+        let app = test::init_service(App::new().route("/predict", web::post().to(predict))).await;
+        let req = test::TestRequest::post()
+            .uri("/predict")
+            .set_json(&InputData { text: "Hello, world!".to_string(), max_length: Some(50) })
+            .to_request();
+        
+        let resp = test::call_service(&app, req).await;
+        assert!(resp.status().is_success());
+    }
 }
