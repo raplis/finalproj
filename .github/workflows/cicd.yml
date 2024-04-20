@@ -38,7 +38,7 @@ jobs:
         clusters:
         - cluster:
             certificate-authority-data: $KUBE_CA
-            server: https://127.0.0.1:51600
+            server: https://192.168.49.2:8443
           name: minikube
         contexts:
         - context:
