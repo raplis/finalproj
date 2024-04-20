@@ -61,35 +61,35 @@ jobs:
         tags: raplis/rust_ml_service:latest
         
 
-  # deploy:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Deploy to EC2
-  #     env:
-  #       SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-  #       HOST: ${{secrets.EC2_PUBLIC_IP}}
-  #       USER: ubuntu
-  #     run: |
-  #       # Install SSH client
-  #       sudo apt-get update
-  #       sudo apt-get install -y openssh-client
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to EC2
+      env:
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        HOST: ${{secrets.EC2_PUBLIC_IP}}
+        USER: ubuntu
+      run: |
+        # Install SSH client
+        sudo apt-get update
+        sudo apt-get install -y openssh-client
 
-  #       # Start SSH agent
-  #       eval "$(ssh-agent -s)"
+        # Start SSH agent
+        eval "$(ssh-agent -s)"
         
-  #       # Add SSH key
-  #       ssh-add <(echo "$SSH_KEY")
+        # Add SSH key
+        ssh-add <(echo "$SSH_KEY")
         
-  #       # Disable SSH host key checking
-  #       mkdir -p ~/.ssh
-  #       echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+        # Disable SSH host key checking
+        mkdir -p ~/.ssh
+        echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 
-  #       ssh $USER@$HOST "kubectl apply -f k8s/deployment.yaml && \
-  #                       kubectl apply -f k8s/service.yaml && \
-  #                       sleep 40 && \
-  #                       kubectl get services"
-
+        ssh $USER@$HOST "kubectl apply -f k8s/deployment.yaml && \
+                        kubectl apply -f k8s/service.yaml && \
+                        sleep 40 && \
+                        kubectl get services"
+        echo "Deployment successful."
 
 
 
