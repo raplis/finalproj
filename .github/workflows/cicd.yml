@@ -27,11 +27,11 @@ jobs:
     - name: Set up Kubeconfig
       uses: azure/setup-kubectl@v1
       with:
-        version: '1.29.4'
+        version: '1.21.0'
 
     - name: Deploy to Kubernetes
       run: |
-        kubectl set image deployment/rust-ml-service rust-ml-service=yourusername/rust-ml-service:latest
+        kubectl set image deployment/rust-ml-service rust-ml-service=raplis/rust-ml-service:latest
 
 
 
