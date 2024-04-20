@@ -64,6 +64,8 @@ jobs:
 
     - name: Update Deployment Image
       run: |
+        # check whether the aws credentials are working
+        aws eks list-clusters
         kubectl set image deployment/rust-ml-service rust-ml-service=raplis/rust_ml_service:latest
       shell: /usr/bin/bash -e {0}
 
