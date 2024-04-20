@@ -24,20 +24,11 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # - name: Build and push Docker image
-    #   uses: docker/build-push-action@v2
-    #   with:
-    #     context: .
-    #     file: ./Dockerfile
-    #     push: true
-    #     tags: raplis/rust_ml_service:latest
-
-
     - name: Deploy to Kubernetes
       env:
-        KUBE_CA: ${{ secrets.KUBE_CA }}
-        KUBE_CLIENT_CERT: ${{ secrets.KUBE_CLIENT_CERT }}
-        KUBE_CLIENT_KEY: ${{ secrets.KUBE_CLIENT_KEY }}
+        KUBE_CA: ${{ secrets.BASE64_ENCODED_CA }}
+        KUBE_CLIENT_CERT: ${{ secrets.BASE64_ENCODED_CLIENT }}
+        KUBE_CLIENT_KEY: ${{ secrets.BASE64_ENCODED_CLIENT_KEY }}
       run: |
         # Create the .kube directory
         mkdir -p $HOME/.kube
