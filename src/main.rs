@@ -1,7 +1,9 @@
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
+use actix_web_prom::{PrometheusMetrics, PrometheusMetricsBuilder};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::process::Command;
+use std::collections::HashMap;
 
 #[derive(Deserialize, Serialize)]
 struct InputData {
@@ -38,8 +40,17 @@ async fn predict(text_data: web::Json<InputData>) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+    let mut labels = HashMap::new();
+    labels.insert("label1".to_string(), "value1".to_string());
+    let prometheus = PrometheusMetricsBuilder::new("api")
+        .endpoint("/metrics")
+        .const_labels(labels)
+        .build()
+        .unwrap();
+    
+    HttpServer::new(move || {
         App::new()
+            .wrap(prometheus.clone())
             .route("/predict", web::post().to(predict))
     })
     .bind("0.0.0.0:8080")?
