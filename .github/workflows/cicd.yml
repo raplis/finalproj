@@ -24,46 +24,14 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: Set up Kubeconfig
+      uses: azure/setup-kubectl@v1
+      with:
+        version: '1.29.4'
+
     - name: Deploy to Kubernetes
-      env:
-        KUBE_CA: ${{ secrets.BASE64_ENCODED_CA }}
-        KUBE_CLIENT_CERT: ${{ secrets.BASE64_ENCODED_CLIENT }}
-        KUBE_CLIENT_KEY: ${{ secrets.BASE64_ENCODED_CLIENT_KEY }}
       run: |
-        # Create the .kube directory
-        mkdir -p $HOME/.kube
-        # Create the kubeconfig file
-        echo "apiVersion: v1
-        kind: Config
-        clusters:
-        - cluster:
-            certificate-authority-data: $KUBE_CA
-            server: https://192.168.49.2:8443
-          name: minikube
-        contexts:
-        - context:
-            cluster: minikube
-            namespace: default
-            user: minikube
-          name: minikube
-        current-context: minikube
-        users:
-        - name: minikube
-          user:
-            client-certificate-data: $KUBE_CLIENT_CERT
-            client-key-data: $KUBE_CLIENT_KEY" > $HOME/.kube/config
-
-        # Apply Kubernetes manifests
-        kubectl apply -f k8s/
-
-        # Update image in deployment
-        kubectl set image deployment/rust-ml-service-deployment rust-ml-service=raplis/rust_ml_service:latest
-
-
-
-
-
-
+        kubectl set image deployment/rust-ml-service rust-ml-service=yourusername/rust-ml-service:latest
 
 
 
