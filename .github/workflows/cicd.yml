@@ -45,7 +45,11 @@ jobs:
         mkdir -p ~/.ssh
         echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 
-        ssh $USER@$HOST "kubectl set image deployment/rust-ml-service rust-ml-service=raplis/rust_ml_service:latest"
+        ssh $USER@$HOST "kubectl delete deployment rust-ml-service-deployment && \
+                        kubectl delete service rust-ml-service && \
+                        kubectl apply -f k8s/deployment.yaml && \
+                        kubectl apply -f k8s/service.yaml && \
+                        kubectl get services"
 
   #  - name: Update Deployment Image
   #     run: |
