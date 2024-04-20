@@ -24,38 +24,40 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Set up Kubeconfig
-      uses: azure/setup-kubectl@v1
-      with:
-        version: 'v1.21.0'
 
-    - name: Deploy to Kubernetes
+    - name: Deploy to EC2
+      env:
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        HOST: ${{secrets.EC2_PUBLIC_IP}}
+        USER: ubuntu
       run: |
-        kubectl set image deployment/rust-ml-service rust-ml-service=raplis/rust-ml-service:latest
+        # Install SSH client
+        sudo apt-get update
+        sudo apt-get install -y openssh-client
 
-
-
-
-
-    # - name: Deploy to EC2
-    #   env:
-    #     SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     HOST: ${{secrets.EC2_PUBLIC_IP}}
-    #     USER: ubuntu
-    #   run: |
-    #     # Install SSH client
-    #     sudo apt-get update
-    #     sudo apt-get install -y openssh-client
-
-    #     # Start SSH agent
-    #     eval "$(ssh-agent -s)"
+        # Start SSH agent
+        eval "$(ssh-agent -s)"
         
-    #     # Add SSH key
-    #     ssh-add <(echo "$SSH_KEY")
+        # Add SSH key
+        ssh-add <(echo "$SSH_KEY")
         
-    #     # Disable SSH host key checking
-    #     mkdir -p ~/.ssh
-    #     echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+        # Disable SSH host key checking
+        mkdir -p ~/.ssh
+        echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+
+    - name: Set up Kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Configure Kubeconfig
+      run: echo "${{ secrets.KUBECONFIG }}" | base64 --decode > ${HOME}/.kube/config
+
+    - name: Update Deployment Image
+      run: |
+        kubectl set image deployment/rust-ml-service rust-ml-service=raplis/rust_ml_service:latest
+      shell: /usr/bin/bash -e {0}
+
 
     #     # SSH to EC2 instance and pull latest Docker image
     #     ssh $USER@$HOST "docker pull raplis/rust_ml_service:latest && \
