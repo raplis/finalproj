@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  build_and_push:
+  test:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -22,8 +22,26 @@ jobs:
         profile: minimal
         override: true
 
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8' 
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install transformers torch
+
     - name: Run Rust tests
       run: cargo test
+
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
@@ -42,32 +60,35 @@ jobs:
     #     push: true
     #     tags: raplis/rust_ml_service:latest
         
-    # - name: Deploy to EC2
-    #   env:
-    #     SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     HOST: ${{secrets.EC2_PUBLIC_IP}}
-    #     USER: ubuntu
-    #   run: |
-    #     # Install SSH client
-    #     sudo apt-get update
-    #     sudo apt-get install -y openssh-client
 
-    #     # Start SSH agent
-    #     eval "$(ssh-agent -s)"
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Deploy to EC2
+  #     env:
+  #       SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  #       HOST: ${{secrets.EC2_PUBLIC_IP}}
+  #       USER: ubuntu
+  #     run: |
+  #       # Install SSH client
+  #       sudo apt-get update
+  #       sudo apt-get install -y openssh-client
+
+  #       # Start SSH agent
+  #       eval "$(ssh-agent -s)"
         
-    #     # Add SSH key
-    #     ssh-add <(echo "$SSH_KEY")
+  #       # Add SSH key
+  #       ssh-add <(echo "$SSH_KEY")
         
-    #     # Disable SSH host key checking
-    #     mkdir -p ~/.ssh
-    #     echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  #       # Disable SSH host key checking
+  #       mkdir -p ~/.ssh
+  #       echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 
-    #     ssh $USER@$HOST "kubectl apply -f k8s/deployment.yaml && \
-    #                     kubectl apply -f k8s/service.yaml && \
-    #                     sleep 40 && \
-    #                     kubectl get services"
-
-
+  #       ssh $USER@$HOST "kubectl apply -f k8s/deployment.yaml && \
+  #                       kubectl apply -f k8s/service.yaml && \
+  #                       sleep 40 && \
+  #                       kubectl get services"
 
 
 
@@ -80,7 +101,9 @@ jobs:
 
 
 
-    
+
+
+
 # kubectl delete deployment rust-ml-service-deployment && \
 #                         kubectl delete service rust-ml-service && \
                         
