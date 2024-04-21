@@ -1,5 +1,11 @@
 ## LLMOps - Rust Machine Learning Model Serving
 
+### Video Demonstration
+
+Here is the link of our demo video: https://youtu.be/S6QLcIrv62U
+
+
+
 ### Project Background and Objectives
 
 The goal of this project is to operationalize machine learning by developing a Rust web service to handle and respond to user data inference requests using an open-source machine learning model. We utilize Docker for containerizing our Rust application and manage scaling through Kubernetes. Additionally, the project integrates a CI/CD pipeline for automated code testing, building, and deployment, along with Prometheus for service monitoring and metrics collection to ensure stable service operations.
@@ -226,6 +232,3 @@ To monitor the performance and stability of the Rust machine learning service, w
          annotations:
            summary: High request latency of Rust ML Service
 
-### Video Demonstration
-
-Here is the link of our demo video: https://youtu.be/S6QLcIrv62U
